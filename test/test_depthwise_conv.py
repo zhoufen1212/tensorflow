@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-sess = tf.InteractiveSession()
+#sess = tf.InteractiveSession()
 
 ##################################################################
 # compare for depthwise_conv2d  and conv2d 
@@ -17,33 +17,38 @@ w_01 = tf.concat(values=[w_0,w_1],axis=2)
 w_23 = tf.concat(values=[w_2,w_3],axis=2)
 w = tf.concat(values=[w_01,w_23],axis=3)
 
-o = tf.nn.depthwise_conv2d(d, w, strides=[1,1,1,1], rate=[1,1], padding='SAME')
-o.eval()
+#o = tf.nn.depthwise_conv2d(d, w, strides=[1,1,1,1], rate=[1,1], padding='SAME')
+o = tf.nn.depthwise_conv2d(d, w, strides=[1,1,1,1], padding='SAME')
+#o.eval()
 
 d1 = d_c0
 w1 = tf.concat(values=[w_0,w_2],axis=3)
 
 o1 = tf.nn.conv2d(d1, w1, strides=[1,1,1,1], padding="SAME")
-o1.eval()
+#o1.eval()
 
 d2 = d_c1
 w2 = tf.concat(values=[w_1,w_3],axis=3)
 
 o2 = tf.nn.conv2d(d2, w2, strides=[1,1,1,1], padding="SAME")
-o2.eval()
+#o2.eval()
 
 o_12 = tf.concat(values=[o1,o2],axis=3)
 
 
-
 o_cmp = tf.reduce_all(tf.equal(o, o_12))
-o_cmp.eval()
+#o_cmp.eval()
 
 o_err = tf.losses.mean_squared_error(o, o_12)
-o_err.eval()
+#o_err.eval()
 
 o_diff = tf.subtract(o, o_12)
-o_diff.eval()
+#o_diff.eval()
 
 
+o3 = tf.nn.depthwise_conv2d(d, w_01, strides=[1,1,1,1], padding='SAME')
+o4 = tf.nn.depthwise_conv2d(d, w_23, strides=[1,1,1,1], padding='SAME')
 
+o_34 = tf.concat(values=[o3,o4],axis=3)
+
+o_diff_2 = tf.subtract(o, o_34)
